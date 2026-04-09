@@ -109,7 +109,14 @@ AND t.date >= datetime() - duration('P7D')
 RETURN c.name, c.email, t
 """
 },
-
+{
+"question": "How many british customers do we have?",
+"query": """
+MATCH (c:Customer)-[:HAS_ACCOUNT]->(a:Account)-[:SENT]->(t:Transaction)
+WHERE c.nationality = 'UK'
+REURN count(DISTINCT c)
+"""
+},
 {
 "question": "Find customers who share the same address as Nicolas Silva",
 "query": """
@@ -193,14 +200,16 @@ RETURN c.name, c.email, t
 import os
 from langchain_community.vectorstores import Neo4jVector
 from langchain_core.example_selectors import SemanticSimilarityExampleSelector
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
+from huggingface_hub import login
 from langchain_core.prompts import FewShotPromptTemplate, PromptTemplate
 from dotenv import load_dotenv
 from langchain_neo4j import GraphCypherQAChain
 from langchain_ollama import ChatOllama
 load_dotenv()
+login(os.environ["HF_TOKEN"])
 example_selector = SemanticSimilarityExampleSelector.from_examples(
-    [], #empty?
+    examples, #empty
     HuggingFaceEmbeddings(),
     Neo4jVector,
     url=os.environ["NEO4J_URI"],
@@ -220,24 +229,31 @@ dynamic_prompt = FewShotPromptTemplate(
     suffix="User input: {question}\nCypher query: ",
     input_variables=["question", "schema"],
 )
-assistant_prompt = PromptTemplate.from_template(
-    """You are a helpful banking KYC assistant. Use the following Cypher query to answer the user's question. 
-    If the Cypher query returns an empty result, say "No results found". 
-    Always use all the information you can get from the 
-    Cypher query result to provide a complete and informative answer to the user.  
-    Here is the Cypher query you should use to answer the question: {cypher_query}""")
+assistant_prompt = PromptTemplate(
+    template="""You are a helpful banking KYC assistant. Use the following context from the Cypher query result to answer the user's question.
+    If the Cypher query returns an empty result, say \"No results found\".
+    Do not answer with just a number, a single sentence or a list of items.
+    Instead:
+      1. Provide a concise summary of the result in plain language.
+      2. Explain what the number or data means for the user.
+      3. Include up to three key observations or insights from the context.
+      4. Suggest one or two follow-up questions the user could ask next.
+    Format the response with a short summary paragraph or table followed by a bullet list of insights and a follow-up suggestion.
+    User question: {question}
+    Context: {context}""",
+    input_variables=["question", "context"],
+)
 
 
-qa_llm = ChatOllama(model="qwen3.5:cloud",)
-cypher_llm = ChatOllama(model ="glm-5:cloud", temperature=0)
 print("Creating chain...")
 
-def create_chain(model, graph):
+def create_chain(model,query_model, graph):
     chain_with_dynamic_few_shot = GraphCypherQAChain.from_llm(graph=graph,
-                                                          cypher_llm=model,
+                                                          cypher_llm=query_model,
                                                           qa_llm=model,
                                                           qa_prompt=assistant_prompt,
                                                           cypher_prompt=dynamic_prompt,
+                                                          return_intermediate_steps=True,
                                                           input_key="query",
                                                           verbose=True,
                                                           validate_cypher = True,

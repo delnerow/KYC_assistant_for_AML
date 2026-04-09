@@ -25,4 +25,6 @@ class Graph:
             password=os.environ["NEO4J_PASSWORD"],
             database="kyc"
         )
+        self.graph.refresh_schema()
+
 graph = Graph().graph

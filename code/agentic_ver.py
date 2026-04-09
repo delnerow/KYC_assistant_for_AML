@@ -2,9 +2,9 @@ from dotenv import load_dotenv
 
 from langgraph.graph import StateGraph, MessagesState, START, END
 from langchain.tools import tool as Tool
-from langchain.messages import SystemMessage
-from langchain.messages import ToolMessage
-from langchain.messages import AnyMessage
+from langchain_core.messages import SystemMessage
+from langchain_core.messages import ToolMessage
+from langchain_core.messages import AnyMessage
 from typing_extensions import TypedDict, Annotated
 import operator
 from typing import Literal

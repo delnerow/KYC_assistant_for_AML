@@ -1,6 +1,6 @@
 
 from langchain.tools import tool
-from code.graph import graph
+from graph import graph
 
 
 def execute_cypher_query( cypher, params=None):

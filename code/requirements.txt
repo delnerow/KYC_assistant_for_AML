@@ -1,0 +1,12 @@
+langchain>=1.2.15
+langchain-core>=0.3.0
+langchain_ollama
+langchain_community>=0.4.1
+langchain_neo4j
+langgraph>=1.1.6
+streamlit>=1.30.0
+dotenv
+sentence-transformers>=2.2.2
+langchain_huggingface>=0.1.0
+
+

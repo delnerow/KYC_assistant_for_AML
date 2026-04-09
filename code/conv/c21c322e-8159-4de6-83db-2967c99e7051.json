@@ -1,0 +1,194 @@
+{
+  "id": "c21c322e-8159-4de6-83db-2967c99e7051",
+  "name": "Conversation 5",
+  "messages": [
+    {
+      "role": "user",
+      "content": "I'm searching for transactions with alerts on second semester of 2025"
+    },
+    {
+      "role": "assistant",
+      "content": "**Transactions with alerts (July\u202f\u2013\u202fDecember\u202f2025)**  \n\n| Transaction\u202fID | Date (2025) | Amount | Currency | Tx\u202ftype | Alert\u202fID | Alert\u202ftype | Severity | Status |\n|---|---|---|---|---|---|---|---|---|\n| 55fa29a4\u201107e9\u201145c1\u20119873\u20113adbb7918756 | 2025\u201110\u201107 | 8\u202f166.65 | EUR | credit | 9dcfee39\u2011f8c3\u20114211\u20119e25\u201171234d25e4e3 | AML\u202fSUSPICIOUS\u202fTRANSACTION | high | open |\n| 74e97e40\u201194df\u20114c98\u20118d90\u2011089d2e4ecc6e | 2025\u201109\u201115 | 1\u202f147.61 | EUR | credit | 25b0cef1\u20119c11\u20114afb\u20118abd\u201170e32c37dc12 | STRUCTURING | medium | open |\n| 34dbe22a\u20112b50\u20114392\u20119619\u201108e02f7899ef | 2025\u201109\u201122 | 545.16 | GBP | credit | 26e619a2\u20115cd7\u20114dbb\u20119572\u2011447e26869057 | PEP\u202fMATCH | high | open |\n| ab22eda4\u2011cccd\u20114847\u2011a00b\u20119862530cefc9 | 2025\u201111\u201115 | 11\u202f756.13 | USD | debit | b1d4f937\u2011de2e\u20114a32\u2011a1e5\u2011a90cd5dc4078 | PEP\u202fMATCH | medium | open |\n| a367e6b5\u2011fb4d\u20114cc2\u20118693\u20113b300f17fd38 | 2025\u201108\u201130 | 6\u202f627.41 | EUR | credit | a2fd4997\u20119f19\u20114b10\u2011a700\u20113c8aebc79868 | STRUCTURING | medium | under_review |\n| f5c72273\u20112adc\u20114178\u2011895a\u2011c58af4e4e390 | 2025\u201108\u201102 | 12\u202f116.06 | USD | credit | 74715d24\u20116389\u20114730\u2011ad9c\u2011691f99d5c1ce | AML\u202fSUSPICIOUS\u202fTRANSACTION | medium | open |\n| f69fb311\u2011fcf7\u201144bc\u201188d8\u201195ce173671d1 | 2025\u201111\u201124 | 5\u202f399.32 | USD | debit | 58e565e5\u201186f6\u20114b5e\u20119152\u201172aba7cbd305 | SANCTIONS\u202fMATCH | high | under_review |\n| 0017cd68\u201154de\u20114295\u2011a8aa\u20114bb134d79d90 | 2025\u201109\u201128 | 16\u202f978.45 | USD | debit | 9cf46d33\u20113aa5\u201140e2\u20118c13\u201131e64fbe914c | STRUCTURING | high | closed |\n| 15d88f3b\u201177d7\u20114e7c\u2011b8b5\u2011f687e02cf2a1 | 2025\u201110\u201123 | 7\u202f252.41 | USD | debit | 104bc39f\u20119d3c\u20114dcf\u20118b77\u20117a36ded1ada4 | STRUCTURING | high | closed |\n| b2108309\u2011d9e4\u20114b24\u2011ae06\u2011f51c259d22cc | 2025\u201108\u201128 | 18\u202f778.63 | GBP | credit | 0ac40020\u20115f23\u20114943\u2011a222\u201145270a179a0f | LARGE\u202fTRANSACTION | high | closed |\n\nAll listed transactions occurred in the second half of 2025 and have an associated alert (various types, severities, and statuses).",
+      "intermediate_steps": [
+        {
+          "query": "cypher\nMATCH (t:Transaction)-[:TRIGGERED]->(a:Alert)\nWHERE t.date >= datetime('2025-07-01')\nAND t.date <= datetime('2025-12-31')\nRETURN t, a\n"
+        },
+        {
+          "context": [
+            {
+              "t": {
+                "date": "2025-10-07T00:00:00.000000000+00:00",
+                "amount": 8166.65,
+                "risk_score": 0.61,
+                "currency": "EUR",
+                "id": "55fa29a4-07e9-45c1-9873-3adbb7918756",
+                "type": "credit"
+              },
+              "a": {
+                "severity": "high",
+                "id": "9dcfee39-f8c3-4211-9e25-71234d25e4e3",
+                "created_date": "2026-01-19T00:00:00.000000000+00:00",
+                "type": "AML_SUSPICIOUS_TRANSACTION",
+                "status": "open"
+              }
+            },
+            {
+              "t": {
+                "date": "2025-09-15T00:00:00.000000000+00:00",
+                "amount": 1147.61,
+                "risk_score": 0.44,
+                "currency": "EUR",
+                "id": "74e97e40-94df-4c98-8d90-089d2e4ecc6e",
+                "type": "credit"
+              },
+              "a": {
+                "severity": "medium",
+                "id": "25b0cef1-9c11-4afb-8abd-70e32c37dc12",
+                "created_date": "2025-04-17T00:00:00.000000000+00:00",
+                "type": "STRUCTURING",
+                "status": "open"
+              }
+            },
+            {
+              "t": {
+                "date": "2025-09-22T00:00:00.000000000+00:00",
+                "amount": 545.16,
+                "risk_score": 0.12,
+                "currency": "GBP",
+                "id": "34dbe22a-2b50-4392-9619-08e02f7899ef",
+                "type": "credit"
+              },
+              "a": {
+                "severity": "high",
+                "id": "26e619a2-5cd7-4dbb-9572-447e26869057",
+                "created_date": "2026-02-08T00:00:00.000000000+00:00",
+                "type": "PEP_MATCH",
+                "status": "open"
+              }
+            },
+            {
+              "t": {
+                "date": "2025-11-15T00:00:00.000000000+00:00",
+                "amount": 11756.13,
+                "risk_score": 0.83,
+                "currency": "USD",
+                "id": "ab22eda4-cccd-4847-a00b-9862530cefc9",
+                "type": "debit"
+              },
+              "a": {
+                "severity": "medium",
+                "id": "b1d4f937-de2e-4a32-a1e5-a90cd5dc4078",
+                "created_date": "2025-03-17T00:00:00.000000000+00:00",
+                "type": "PEP_MATCH",
+                "status": "open"
+              }
+            },
+            {
+              "t": {
+                "date": "2025-08-30T00:00:00.000000000+00:00",
+                "amount": 6627.41,
+                "risk_score": 0.22,
+                "currency": "EUR",
+                "id": "a367e6b5-fb4d-4cc2-8693-3b300f17fd38",
+                "type": "credit"
+              },
+              "a": {
+                "severity": "medium",
+                "id": "a2fd4997-9f19-4b10-a700-3c8aebc79868",
+                "created_date": "2025-12-17T00:00:00.000000000+00:00",
+                "type": "STRUCTURING",
+                "status": "under_review"
+              }
+            },
+            {
+              "t": {
+                "date": "2025-08-02T00:00:00.000000000+00:00",
+                "amount": 12116.06,
+                "risk_score": 0.63,
+                "currency": "USD",
+                "id": "f5c72273-2adc-4178-895a-c58af4e4e390",
+                "type": "credit"
+              },
+              "a": {
+                "severity": "medium",
+                "id": "74715d24-6389-4730-ad9c-691f99d5c1ce",
+                "created_date": "2025-04-13T00:00:00.000000000+00:00",
+                "type": "AML_SUSPICIOUS_TRANSACTION",
+                "status": "open"
+              }
+            },
+            {
+              "t": {
+                "date": "2025-11-24T00:00:00.000000000+00:00",
+                "amount": 5399.32,
+                "risk_score": 0.05,
+                "currency": "USD",
+                "id": "f69fb311-fcf7-44bc-88d8-95ce173671d1",
+                "type": "debit"
+              },
+              "a": {
+                "severity": "high",
+                "id": "58e565e5-86f6-4b5e-9152-72aba7cbd305",
+                "created_date": "2025-11-11T00:00:00.000000000+00:00",
+                "type": "SANCTIONS_MATCH",
+                "status": "under_review"
+              }
+            },
+            {
+              "t": {
+                "date": "2025-09-28T00:00:00.000000000+00:00",
+                "amount": 16978.45,
+                "risk_score": 0.61,
+                "currency": "USD",
+                "id": "0017cd68-54de-4295-a8aa-4bb134d79d90",
+                "type": "debit"
+              },
+              "a": {
+                "severity": "high",
+                "id": "9cf46d33-3aa5-40e2-8c13-31e64fbe914c",
+                "created_date": "2025-11-18T00:00:00.000000000+00:00",
+                "type": "STRUCTURING",
+                "status": "closed"
+              }
+            },
+            {
+              "t": {
+                "date": "2025-10-23T00:00:00.000000000+00:00",
+                "amount": 7252.41,
+                "risk_score": 0.58,
+                "currency": "USD",
+                "id": "15d88f3b-77d7-4e7c-b8b5-f687e02cf2a1",
+                "type": "debit"
+              },
+              "a": {
+                "severity": "high",
+                "id": "104bc39f-9d3c-4dcf-8b77-7a36ded1ada4",
+                "created_date": "2025-09-30T00:00:00.000000000+00:00",
+                "type": "STRUCTURING",
+                "status": "closed"
+              }
+            },
+            {
+              "t": {
+                "date": "2025-08-28T00:00:00.000000000+00:00",
+                "amount": 18778.63,
+                "risk_score": 0.04,
+                "currency": "GBP",
+                "id": "b2108309-d9e4-4b24-ae06-f51c259d22cc",
+                "type": "credit"
+              },
+              "a": {
+                "severity": "high",
+                "id": "0ac40020-5f23-4943-a222-45270a179a0f",
+                "created_date": "2025-04-19T00:00:00.000000000+00:00",
+                "type": "LARGE_TRANSACTION",
+                "status": "closed"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "counter": 6
+}
