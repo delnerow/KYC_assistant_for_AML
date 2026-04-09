@@ -1,0 +1,128 @@
+{
+  "id": "82b476c0-1fb9-4a73-a452-1f86194d1132",
+  "name": "Conversation 13",
+  "messages": [
+    {
+      "role": "user",
+      "content": "a5d6828f-44fc-4912-9cde-987f49fba1e9"
+    },
+    {
+      "role": "user",
+      "content": "I'm searching for transactions with alerts on second semester of 2025"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "intermediate_steps": [
+        {
+          "query": "cypher\nMATCH (t:Transaction)-[:TRIGGERED]->(a:Alert)\nWHERE t.date >= datetime('2025-07-01')\nAND t.date <= datetime('2025-12-31')\nRETURN t\n"
+        },
+        {
+          "context": [
+            {
+              "t": {
+                "date": "2025-10-07T00:00:00.000000000+00:00",
+                "amount": 8166.65,
+                "risk_score": 0.61,
+                "currency": "EUR",
+                "id": "55fa29a4-07e9-45c1-9873-3adbb7918756",
+                "type": "credit"
+              }
+            },
+            {
+              "t": {
+                "date": "2025-09-15T00:00:00.000000000+00:00",
+                "amount": 1147.61,
+                "risk_score": 0.44,
+                "currency": "EUR",
+                "id": "74e97e40-94df-4c98-8d90-089d2e4ecc6e",
+                "type": "credit"
+              }
+            },
+            {
+              "t": {
+                "date": "2025-09-22T00:00:00.000000000+00:00",
+                "amount": 545.16,
+                "risk_score": 0.12,
+                "currency": "GBP",
+                "id": "34dbe22a-2b50-4392-9619-08e02f7899ef",
+                "type": "credit"
+              }
+            },
+            {
+              "t": {
+                "date": "2025-11-15T00:00:00.000000000+00:00",
+                "amount": 11756.13,
+                "risk_score": 0.83,
+                "currency": "USD",
+                "id": "ab22eda4-cccd-4847-a00b-9862530cefc9",
+                "type": "debit"
+              }
+            },
+            {
+              "t": {
+                "date": "2025-08-30T00:00:00.000000000+00:00",
+                "amount": 6627.41,
+                "risk_score": 0.22,
+                "currency": "EUR",
+                "id": "a367e6b5-fb4d-4cc2-8693-3b300f17fd38",
+                "type": "credit"
+              }
+            },
+            {
+              "t": {
+                "date": "2025-08-02T00:00:00.000000000+00:00",
+                "amount": 12116.06,
+                "risk_score": 0.63,
+                "currency": "USD",
+                "id": "f5c72273-2adc-4178-895a-c58af4e4e390",
+                "type": "credit"
+              }
+            },
+            {
+              "t": {
+                "date": "2025-11-24T00:00:00.000000000+00:00",
+                "amount": 5399.32,
+                "risk_score": 0.05,
+                "currency": "USD",
+                "id": "f69fb311-fcf7-44bc-88d8-95ce173671d1",
+                "type": "debit"
+              }
+            },
+            {
+              "t": {
+                "date": "2025-09-28T00:00:00.000000000+00:00",
+                "amount": 16978.45,
+                "risk_score": 0.61,
+                "currency": "USD",
+                "id": "0017cd68-54de-4295-a8aa-4bb134d79d90",
+                "type": "debit"
+              }
+            },
+            {
+              "t": {
+                "date": "2025-10-23T00:00:00.000000000+00:00",
+                "amount": 7252.41,
+                "risk_score": 0.58,
+                "currency": "USD",
+                "id": "15d88f3b-77d7-4e7c-b8b5-f687e02cf2a1",
+                "type": "debit"
+              }
+            },
+            {
+              "t": {
+                "date": "2025-08-28T00:00:00.000000000+00:00",
+                "amount": 18778.63,
+                "risk_score": 0.04,
+                "currency": "GBP",
+                "id": "b2108309-d9e4-4b24-ae06-f51c259d22cc",
+                "type": "credit"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "counter": 34
+}

@@ -4,7 +4,7 @@
   "messages": [
     {
       "role": "user",
-      "content": "I'm searching for transactions with alerts on second semester of 2025 (minimax 2.5)"
+      "content": "I'm searching for transactions with alerts on second semester of 2025"
     },
     {
       "role": "assistant",
@@ -190,5 +190,5 @@
       ]
     }
   ],
-  "counter": 11
+  "counter": 34
 }

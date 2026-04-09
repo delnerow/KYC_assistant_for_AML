@@ -112,9 +112,9 @@ RETURN c.name, c.email, t
 {
 "question": "How many british customers do we have?",
 "query": """
-MATCH (c:Customer)-[:HAS_ACCOUNT]->(a:Account)-[:SENT]->(t:Transaction)
+MATCH (c:Customer)
 WHERE c.nationality = 'UK'
-REURN count(DISTINCT c)
+RETURN COUNT(DISTINCT c) AS customer_count
 """
 },
 {
@@ -204,6 +204,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from huggingface_hub import login
 from langchain_core.prompts import FewShotPromptTemplate, PromptTemplate
 from dotenv import load_dotenv
+from langchain_core.messages import HumanMessage
 from langchain_neo4j import GraphCypherQAChain
 from langchain_ollama import ChatOllama
 load_dotenv()
@@ -225,21 +226,22 @@ example_prompt = PromptTemplate.from_template(
 dynamic_prompt = FewShotPromptTemplate(
     example_selector=example_selector,
     example_prompt=example_prompt,
-    prefix="You are a Neo4j expert. Given an input question, create a syntactically correct Cypher query to run.\n\nHere is the schema information\n{schema}.\n\nBelow are a number of examples of questions and their corresponding Cypher queries. Don't add any preambles, just return the correct cypher query",
+    prefix="You are a Neo4j expert. Given an input question, create a syntactically correct Cypher query to run.\n\nHere is the schema information\n{schema}.\n\nBelow are a number of examples of questions and their corresponding Cypher queries. Don't add any preambles, just return the correct cypher query. Remember cypher queries always end with a RETURN statement.\n\n",
     suffix="User input: {question}\nCypher query: ",
     input_variables=["question", "schema"],
 )
 assistant_prompt = PromptTemplate(
-    template="""You are a helpful banking KYC assistant. Use the following context from the Cypher query result to answer the user's question.
-    If the Cypher query returns an empty result, say \"No results found\".
-    Do not answer with just a number, a single sentence or a list of items.
-    Instead:
-      1. Provide a concise summary of the result in plain language.
-      2. Explain what the number or data means for the user.
-      3. Include up to three key observations or insights from the context.
-      4. Suggest one or two follow-up questions the user could ask next.
+    template="""
     User question: {question}
-    Context: {context}""",
+    Context: {context}
+    You are a helpful banking KYC assistant. Use the above context from the Cypher query result to answer the user's question.
+    If the Cypher query returns an empty result, say \"No results found\".
+    Always structure your response in the following guideline:
+    1. Summary: Provide a concise summary/table/list of the result in plain language.
+    2. Explanation: Explain what the number or data means for the user, a financial professional, in the context of KYC and AML compliance.
+    3. Key Observations: Include up to three key observations or insights from the context. If limited data, note patterns or implications.
+    4. Follow-up: Suggest one or two ways  you could help next, given its original question and the context.
+    """,
     input_variables=["question", "context"],
 )
 
@@ -248,14 +250,46 @@ print("Creating chain...")
 
 def create_chain(model,query_model, graph):
     chain_with_dynamic_few_shot = GraphCypherQAChain.from_llm(graph=graph,
-                                                          cypher_llm=query_model,
-                                                          qa_llm=model,
-                                                          qa_prompt=assistant_prompt,
+                                                          llm=query_model,
+                                                          qa_prompt=None,  # Remove qa_prompt since it's not used
                                                           cypher_prompt=dynamic_prompt,
                                                           return_intermediate_steps=True,
                                                           input_key="query",
                                                           verbose=True,
                                                           validate_cypher = True,
                                                           allow_dangerous_requests=True,
+                                                          return_direct=True,
                                                           use_function_response=True)
-    return chain_with_dynamic_few_shot
+    
+    class CustomQAChain:
+        def __init__(self, cypher_chain, qa_model, qa_prompt):
+            self.cypher_chain = cypher_chain
+            self.qa_model = qa_model
+            self.qa_prompt = qa_prompt
+        
+        def invoke(self, inputs):
+            # Run the cypher chain
+            cypher_result = self.cypher_chain.invoke(inputs)
+            
+            # Extract question and context
+            question = inputs.get("query", "")
+            context = cypher_result.get("intermediate_steps", [])
+            if context and isinstance(context, list) and len(context) > 1:
+                context = context[1]  # Usually the second step has the context
+                if isinstance(context, dict) and "context" in context:
+                    context = context["context"]
+            else:
+                context = ""
+            
+            # Format the prompt
+            formatted_prompt = self.qa_prompt.format(question=question, context=str(context))
+            # Run QA with model
+            qa_result = self.qa_model.invoke([HumanMessage(content=formatted_prompt)])
+
+            # Return combined result
+            return {
+                "result": qa_result.content,
+                "intermediate_steps": cypher_result.get("intermediate_steps", [])
+            }
+    
+    return CustomQAChain(chain_with_dynamic_few_shot, model, assistant_prompt)
