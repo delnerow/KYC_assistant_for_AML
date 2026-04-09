@@ -74,7 +74,7 @@ def save_conversations_to_disk(conversations, conv_counter):
 @st.cache_resource
 def load_agent(mode):
     # build model
-    model= ChatOllama(model="devstral-small-2:24b-cloud", temperature=0)
+    model= ChatOllama(model="deepseek-v3.1:671b-cloud", temperature=0)
     query_model = ChatOllama(model="ministral-3:14b-cloud", temperature=0)
     if mode == "agentic":
         tools = set_tools

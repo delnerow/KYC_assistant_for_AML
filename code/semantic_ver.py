@@ -238,7 +238,6 @@ assistant_prompt = PromptTemplate(
       2. Explain what the number or data means for the user.
       3. Include up to three key observations or insights from the context.
       4. Suggest one or two follow-up questions the user could ask next.
-    Format the response with a short summary paragraph or table followed by a bullet list of insights and a follow-up suggestion.
     User question: {question}
     Context: {context}""",
     input_variables=["question", "context"],

@@ -1,14 +1,14 @@
 {
-  "id": "f9cb413c-014b-44f0-9184-ad86b674f3f9",
-  "name": "Conversation 6",
+  "id": "0c9b5198-7f26-4817-9bbd-60353bd2cc9b",
+  "name": "Conversation 11",
   "messages": [
     {
       "role": "user",
-      "content": "I'm searching for transactions with alerts on second semester of 2025( gpt 120 with slight prompt change)"
+      "content": "I'm searching for transactions with alerts on second semester of 2025 (deepseek 3.1)"
     },
     {
       "role": "assistant",
-      "content": "**Transactions with alerts (July\u202f\u2013\u202fDecember\u202f2025)**  \n\n| Date (2025) | Amount | Currency | Tx\u202ftype | Alert severity | Alert type | Alert status |\n|-------------|--------|----------|---------|----------------|------------|--------------|\n| 2025\u201110\u201107 | 8\u202f166.65 | EUR | credit | high | AML\u202fSUSPICIOUS\u202fTRANSACTION | open |\n| 2025\u201109\u201115 | 1\u202f147.61 | EUR | credit | medium | STRUCTURING | open |\n| 2025\u201109\u201122 | 545.16 | GBP | credit | high | PEP\u202fMATCH | open |\n| 2025\u201111\u201115 | 11\u202f756.13 | USD | debit | medium | PEP\u202fMATCH | open |\n| 2025\u201108\u201130 | 6\u202f627.41 | EUR | credit | medium | STRUCTURING | under_review |\n| 2025\u201108\u201102 | 12\u202f116.06 | USD | credit | medium | AML\u202fSUSPICIOUS\u202fTRANSACTION | open |\n| 2025\u201111\u201124 | 5\u202f399.32 | USD | debit | high | SANCTIONS\u202fMATCH | under_review |\n| 2025\u201109\u201128 | 16\u202f978.45 | USD | debit | high | STRUCTURING | closed |\n| 2025\u201110\u201123 | 7\u202f252.41 | USD | debit | high | STRUCTURING | closed |\n| 2025\u201108\u201128 | 18\u202f778.63 | GBP | credit | high | LARGE\u202fTRANSACTION | closed |\n\nAll listed entries fall within the second semester (July\u202f\u2013\u202fDecember) of 2025 and have an associated alert.",
+      "content": "I found 10 transactions from the second semester of 2025 (July-December) that have associated alerts:\n\n1. **Oct 7, 2025** - \u20ac8,166.65 (High risk: AML Suspicious Transaction)\n2. **Sep 15, 2025** - \u20ac1,147.61 (Medium risk: Structuring)\n3. **Sep 22, 2025** - \u00a3545.16 (High risk: PEP Match)\n4. **Nov 15, 2025** - $11,756.13 (Medium risk: PEP Match)\n5. **Aug 30, 2025** - \u20ac6,627.41 (Medium risk: Structuring - Under Review)\n6. **Aug 2, 2025** - $12,116.06 (Medium risk: AML Suspicious Transaction)\n7. **Nov 24, 2025** - $5,399.32 (High risk: Sanctions Match - Under Review)\n8. **Sep 28, 2025** - $16,978.45 (High risk: Structuring - Closed)\n9. **Oct 23, 2025** - $7,252.41 (High risk: Structuring - Closed)\n10. **Aug 28, 2025** - \u00a318,778.63 (High risk: Large Transaction - Closed)\n\nThe alerts include various types: AML suspicious transactions, structuring, PEP matches, sanctions matches, and large transactions, with severity levels ranging from medium to high.",
       "intermediate_steps": [
         {
           "query": "cypher\nMATCH (t:Transaction)-[:TRIGGERED]->(a:Alert)\nWHERE t.date >= datetime('2025-07-01')\nAND t.date <= datetime('2025-12-31')\nRETURN t, a\n"
