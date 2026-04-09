@@ -1,14 +1,14 @@
 {
-  "id": "ce401453-bd85-4540-83be-2f2082d099bb",
-  "name": "Conversation 2",
+  "id": "a5779121-ee34-473a-839b-a4d9216e64ae",
+  "name": "Conversation 7",
   "messages": [
     {
       "role": "user",
-      "content": "I'm searching for transactions with alerts on second semester of 2025.(ministral 3.14)"
+      "content": "I'm searching for transactions with alerts on second semester of 2025 (minimax 2.5)"
     },
     {
       "role": "assistant",
-      "content": "Here are the transactions with alerts in the second semester of 2025:\n\n1. **Oct 7, 2025** \u2013 Credit, **8,166.65 EUR**, Risk: 0.61\n   Alert: **AML_SUSPICIOUS_TRANSACTION**, High severity, Open.\n\n2. **Sep 15, 2025** \u2013 Credit, **1,147.61 EUR**, Risk: 0.44\n   Alert: **STRUCTURING**, Medium severity, Open.\n\n3. **Sep 22, 2025** \u2013 Credit, **545.16 GBP**, Risk: 0.12\n   Alert: **PEP_MATCH**, High severity, Open.\n\n4. **Nov 15, 2025** \u2013 Debit, **11,756.13 USD**, Risk: 0.83\n   Alert: **PEP_MATCH**, Medium severity, Open.\n\n5. **Aug 30, 2025** \u2013 Credit, **6,627.41 EUR**, Risk: 0.22\n   Alert: **STRUCTURING**, Medium severity, Under review.\n\n6. **Aug 2, 2025** \u2013 Credit, **12,116.06 USD**, Risk: 0.63\n   Alert: **AML_SUSPICIOUS_TRANSACTION**, Medium severity, Open.\n\n7. **Nov 24, 2025** \u2013 Debit, **5,399.32 USD**, Risk: 0.05\n   Alert: **SANCTIONS_MATCH**, High severity, Under review.\n\n8. **Sep 28, 2025** \u2013 Debit, **16,978.45 USD**, Risk: 0.61\n   Alert: **STRUCTURING**, High severity, Closed.\n\n9. **Oct 23, 2025** \u2013 Debit, **7,252.41 USD**, Risk: 0.58\n   Alert: **STRUCTURING**, High severity, Closed.\n\n10. **Aug 28, 2025** \u2013 Credit, **18,778.63 GBP**, Risk: 0.04\n    Alert: **LARGE_TRANSACTION**, High severity, Closed.",
+      "content": "\n\nHere are the transactions with alerts from the second semester of 2025 (July - December):\n\n| Date | Amount | Currency | Type | Risk Score | Alert Type | Severity | Status |\n|------|--------|----------|------|------------|------------|----------|--------|\n| 2025-10-07 | 8,166.65 | EUR | credit | 0.61 | AML_SUSPICIOUS_TRANSACTION | high | open |\n| 2025-09-15 | 1,147.61 | EUR | credit | 0.44 | STRUCTURING | medium | open |\n| 2025-09-22 | 545.16 | GBP | credit | 0.12 | PEP_MATCH | high | open |\n| 2025-11-15 | 11,756.13 | USD | debit | 0.83 | PEP_MATCH | medium | open |\n| 2025-08-30 | 6,627.41 | EUR | credit | 0.22 | STRUCTURING | medium | under_review |\n| 2025-08-02 | 12,116.06 | USD | credit | 0.63 | AML_SUSPICIOUS_TRANSACTION | medium | open |\n| 2025-11-24 | 5,399.32 | USD | debit | 0.05 | SANCTIONS_MATCH | high | under_review |\n| 2025-09-28 | 16,978.45 | USD | debit | 0.61 | STRUCTURING | high | closed |\n| 2025-10-23 | 7,252.41 | USD | debit | 0.58 | STRUCTURING | high | closed |\n| 2025-08-28 | 18,778.63 | GBP | credit | 0.04 | LARGE_TRANSACTION | high | closed |\n\n**Summary:**\n- **10 transactions** with alerts found\n- Alert types include: STRUCTURING (4), PEP_MATCH (2), AML_SUSPICIOUS_TRANSACTION (2), SANCTIONS_MATCH (1), LARGE_TRANSACTION (1)\n- High severity: 6 | Medium severity: 4\n- Status: open (5), closed (3), under_review (2)",
       "intermediate_steps": [
         {
           "query": "cypher\nMATCH (t:Transaction)-[:TRIGGERED]->(a:Alert)\nWHERE t.date >= datetime('2025-07-01')\nAND t.date <= datetime('2025-12-31')\nRETURN t, a\n"
