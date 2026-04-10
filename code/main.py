@@ -21,10 +21,6 @@ def json_serializer(obj):
         return list(obj)
     return str(obj)
     
-# Streamlit UI
-st.set_page_config(page_title=" Assistant", layout="wide")
-st.title("💬 Ask me anything related to KYC")
-
 # Conversation persistence functions
 CONVERSATIONS_DIR = Path("conv")
 
@@ -45,7 +41,7 @@ def load_conversations_from_disk():
                 conv_id = data.get("id")
                 if conv_id:
                     conversations[conv_id] = {
-                        "name": data.get("name", f"Conversation {conv_counter + 1}"),
+                        "name": data.get("name", " "),
                         "messages": data.get("messages", [])
                     }
                     conv_counter = max(conv_counter, int(data.get("counter", 0)))
@@ -74,7 +70,7 @@ def save_conversations_to_disk(conversations, conv_counter):
 @st.cache_resource
 def load_agent(mode):
     # build model
-    model= ChatOllama(model="ministral-3:14b-cloud", temperature=0)
+    model= ChatOllama(model="ministral-3:8b-cloud", temperature=0)
     query_model = ChatOllama(model="ministral-3:14b-cloud", temperature=0)
     if mode == "agentic":
         tools = set_tools
@@ -82,8 +78,38 @@ def load_agent(mode):
     else:
         agent = create_chain(model,query_model, graph)
     return agent
+@st.cache_resource
+def load_title_model():
+    return ChatOllama(model="ministral-3:8b-cloud", temperature=0)
 
+title_model = load_title_model()
 agent = load_agent("chain")
+
+    
+def suggest_title_from_message(title_model, user_message: str) -> str:
+    """
+    Use a lightweight model to generate a short conversation title.
+    """
+    prompt = f"""
+    Generate a short (max 6 words) conversation title for this question:
+    "{user_message}"
+    Only return the title.
+    """
+
+    response = title_model.invoke([HumanMessage(content=prompt)])
+    title = response.content.strip()
+
+    if not title:
+        return "New Conversation"
+
+    # Clean unwanted quotes
+    return title.replace('"', "").replace("'", "")   
+    
+# Streamlit UI
+st.set_page_config(page_title=" Assistant", layout="wide")
+st.title("💬 KYC, AML and Compliance Investigation Assistant")
+
+
 
 # Initialize conversations from disk if not present
 if "conversations" not in st.session_state:
@@ -93,7 +119,7 @@ if "conversations" not in st.session_state:
 if not st.session_state.conversations:
     st.session_state.conv_counter = 1
     conv_id = str(uuid.uuid4())
-    st.session_state.conversations[conv_id] = {"name": f"Conversation {st.session_state.conv_counter}", "messages": []}
+    st.session_state.conversations[conv_id] = {"name": "", "messages": []}
     st.session_state.current_conv = conv_id
     save_conversations_to_disk(st.session_state.conversations, st.session_state.conv_counter)
 
@@ -104,26 +130,30 @@ if "current_conv" not in st.session_state or st.session_state.current_conv not i
 # Sidebar for conversation management
 with st.sidebar:
     st.header("Conversations")
+
     
-    # Button to start new conversation
+    st.divider()
+
+    # Create new conversation button
     if st.button("➕ New Conversation", use_container_width=True):
         st.session_state.conv_counter += 1
         conv_id = str(uuid.uuid4())
-        st.session_state.conversations[conv_id] = {"name": f"Conversation {st.session_state.conv_counter}", "messages": []}
+        st.session_state.conversations[conv_id] = {
+            "name": " ",
+            "messages": []
+        }
         st.session_state.current_conv = conv_id
         save_conversations_to_disk(st.session_state.conversations, st.session_state.conv_counter)
         st.rerun()
-    
+
     st.divider()
-    
-    # Display list of conversations
+
+    # Conversation list
     for conv_id, data in st.session_state.conversations.items():
-        # Highlight current conversation
         is_current = conv_id == st.session_state.current_conv
-        button_label = f"✓ {data['name']}" if is_current else data['name']
-        button_style = "primary" if is_current else "secondary"
-        
-        if st.button(button_label, use_container_width=True, key=f"conv_{conv_id}"):
+        label = f"✓ {data['name']}" if is_current else data["name"]
+
+        if st.button(label, use_container_width=True, key=f"conv_{conv_id}"):
             st.session_state.current_conv = conv_id
             st.rerun()
 
@@ -158,7 +188,15 @@ prompt = st.chat_input("Ask about the graph...")
 if prompt:
     # Show user message
     current_messages.append({"role": "user", "content": prompt})
-    
+        # If this is the first message in the conversation → auto-generate title
+    if sum(1 for m in current_messages if m["role"] == "user") == 1:
+        auto_title = suggest_title_from_message(title_model, prompt)
+        print(f"Suggested title: {auto_title}")
+        if not st.session_state.conversations[conv_id]["name"]:
+            st.session_state.conversations[conv_id]["name"] = auto_title
+        st.session_state.conversations[st.session_state.current_conv]["name"] = auto_title
+        save_conversations_to_disk(st.session_state.conversations, st.session_state.conv_counter)
+        
     with st.chat_message("user"):
         st.markdown(prompt)
 

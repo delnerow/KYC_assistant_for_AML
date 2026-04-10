@@ -1,0 +1,11 @@
+{
+  "id": "fc7ef251-5e75-4ed3-a86c-ae4d2e120ce9",
+  "name": "**Detecting 2-hop transaction cycles**",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Find cycles of transactions of 2 hops and their conterparties"
+    }
+  ],
+  "counter": 52
+}

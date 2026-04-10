@@ -194,6 +194,31 @@ WHERE c.risk_level = 'high'
 AND t.date >= datetime() - duration('P7D')
 RETURN c.name, c.email, t
 """
+},{
+    "question" : " Show cycles of transactions between customers of 2 hops",
+    "query": """
+    MATCH path = (a1:Account)-[:SENT]->(t1:Transaction)-[:RECEIVED]->(a2:Account)-[:SENT]->(t2:Transaction)-[:RECEIVED]->(a3:Account)
+WHERE a1.id <> a3.id
+WITH a1, a2, a3, t1, t2,
+     [x in nodes(path) | x] AS nodes,
+     [x in relationships(path) | x] AS rels
+WHERE SIZE(nodes) = 5 AND SIZE(rels) = 4
+WITH t1,t2,COLLECT(DISTINCT a1) AS accounts1, COLLECT(DISTINCT a2) AS accounts2, COLLECT(DISTINCT a3) AS accounts3
+UNWIND accounts1 AS a1
+UNWIND accounts2 AS a2
+UNWIND accounts3 AS a3
+MATCH (a1)<-[:HAS_ACCOUNT]-(c1:Customer)
+MATCH (a2)<-[:HAS_ACCOUNT]-(c2:Customer)
+MATCH (a3)<-[:HAS_ACCOUNT]-(c3:Customer)
+RETURN
+    c1.name AS counterparty1,
+    c2.name AS counterparty2,
+    c3.name AS counterparty3,
+    [t1, t2] AS transactions,
+    'Cycle of 2 hops' AS cycle_type
+
+    """ 
+    
 }
 
 ]
@@ -236,11 +261,11 @@ assistant_prompt = PromptTemplate(
     Context: {context}
     You are a helpful banking KYC assistant. Use the above context from the Cypher query result to answer the user's question.
     If the Cypher query returns an empty result, say \"No results found\".
-    Always structure your response in the following guideline:
-    1. Summary: Provide a concise summary/table/list of the result in plain language.
-    2. Explanation: Explain what the number or data means for the user, a financial professional, in the context of KYC and AML compliance.
-    3. Key Observations: Include up to three key observations or insights from the context. If limited data, note patterns or implications.
-    4. Follow-up: Suggest one or two ways  you could help next, given its original question and the context.
+    Otherwise, always structure your response in the following guideline:
+    1. Summary  
+    2. Explanation of data
+    3. Key Observations
+    4. Follow-up steps
     """,
     input_variables=["question", "context"],
 )
@@ -258,7 +283,7 @@ def create_chain(model,query_model, graph):
                                                           verbose=True,
                                                           validate_cypher = True,
                                                           allow_dangerous_requests=True,
-                                                          return_direct=True,
+                                                          
                                                           use_function_response=True)
     
     class CustomQAChain:

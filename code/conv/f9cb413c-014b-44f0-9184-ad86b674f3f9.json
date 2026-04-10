@@ -1,6 +1,6 @@
 {
   "id": "f9cb413c-014b-44f0-9184-ad86b674f3f9",
-  "name": "Conversation 6",
+  "name": "gpt 120 oss",
   "messages": [
     {
       "role": "user",
@@ -190,5 +190,5 @@
       ]
     }
   ],
-  "counter": 34
+  "counter": 52
 }

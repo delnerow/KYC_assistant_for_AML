@@ -1,0 +1,294 @@
+{
+  "id": "d4562dbe-96d0-450c-ae10-ad109e318857",
+  "name": "**Detecting 2-hop transaction cycles**",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Find cycles of transactions of 2 hops and their conterparties"
+    },
+    {
+      "role": "assistant",
+      "content": "### **1. Summary**\nThe provided context contains **10 distinct 2-hop transaction cycles** involving three counterparties each. These cycles represent **potential money movement patterns** where funds flow between three entities in a closed loop (e.g., A \u2192 B \u2192 C \u2192 A). Below is a structured breakdown of the cycles, their counterparties, and key details.\n\n---\n\n### **2. Explanation of Data**\nEach cycle entry includes:\n- **Three counterparties** (`counterparty1`, `counterparty2`, `counterparty3`) involved in the transaction loop.\n- **Two transactions** (one from each of two counterparties to the third), forming a 2-hop cycle.\n- **Transaction details** (date, amount, risk score, currency, type: `credit`/`debit`).\n- **Emails** of the counterparties for identification.\n\n**Key Attributes:**\n- **Cycle Type:** All entries are labeled as `2-hop transaction cycle`.\n- **Risk Scores:** Vary from **0.15 to 0.97**, indicating varying levels of suspiciousness.\n- **Currencies:** Primarily **USD**, with some **EUR** and **GBP** transactions.\n\n---\n\n### **3. Key Observations**\n\n#### **A. Common Counterparty Patterns**\n1. **Angela Watson** appears in **3 cycles** (as `counterparty3`):\n   - Patricia King \u2194 Cristian Morales \u2194 Angela Watson\n   - Nicholas Burns \u2194 Matthew Craig \u2194 Angela Watson\n   - Jamie Mason \u2194 Clark-Jackson \u2194 Julia Hebert *(Note: Julia Hebert is also repeated in other cycles)*\n\n2. **Julia Hebert** appears in **4 cycles** (as `counterparty3`):\n   - Margaret Hartman \u2194 Maureen Smith \u2194 Julia Hebert\n   - Rodney Morris \u2194 Maureen Smith \u2194 Julia Hebert\n   - Jamie Mason \u2194 Clark-Jackson \u2194 Julia Hebert\n   - Rowe, Monroe and Taylor (firm) \u2194 Stefanie Massey \u2194 Rowe, Monroe and Taylor (firm) *(Note: This may indicate internal firm transactions.)*\n\n3. **Rowe, Monroe and Taylor** (likely a firm) appears in **4 cycles** (as `counterparty3`):\n   - Sara Sherman \u2194 Stefanie Massey \u2194 Rowe, Monroe and Taylor\n   - William Richards \u2194 Stefanie Massey \u2194 Rowe, Monroe and Taylor\n   - Michael Hill \u2194 Dawn Simon \u2194 Rowe, Monroe and Taylor\n   - Erik Hill \u2194 Dawn Simon \u2194 Rowe, Monroe and Taylor\n\n#### **B. Transaction Flow Analysis**\n- **Debit-Credit Patterns:**\n  - Most cycles show **one debit and one credit** between the three parties, suggesting **funds are being cycled** (e.g., A debits B, B credits C, C debits A).\n  - Example:\n    - **Nicholas Burns (credit) \u2192 Matthew Craig (debit) \u2192 Angela Watson (debit)**\n    - **Jamie Mason (debit) \u2192 Clark-Jackson (credit) \u2192 Julia Hebert (debit)**\n\n- **Repeated Transaction IDs:**\n  - The ID `a0e84ea9-5f78-4026-acc8-ce2ba098a39f` appears in **two cycles**:\n    1. Joshua Lee \u2194 Matthew Craig \u2194 Angela Watson (debit)\n    2. Nicholas Burns \u2194 Matthew Craig \u2194 Angela Watson (debit)\n    \u2192 This suggests **the same transaction was reused in multiple cycles**, which may indicate **data duplication or a deliberate pattern**.\n\n- **High-Risk Transactions:**\n  - **Rodney Morris \u2194 Maureen Smith \u2194 Julia Hebert** (both EUR debits, risk scores: **0.80 and 0.87**).\n  - **Sara Sherman \u2194 Stefanie Massey \u2194 Rowe, Monroe and Taylor** (USD debits, risk scores: **0.83 and 0.97**).\n\n#### **C. Currency and Timing Insights**\n- **EUR Transactions:**\n  - All EUR transactions involve **Maureen Smith** and **Julia Hebert** (likely a high-risk pair).\n  - Dates: **May 27, 2024** and **June 17, 2024** (clustered in late spring).\n- **USD Transactions:**\n  - Mostly **2024\u20132025**, with a few in **2026** (e.g., William Richards\u2019 debit on **Jan 24, 2026**).\n- **GBP Transaction:**\n  - Only **William Richards** (debit on **Apr 8, 2025**), suggesting limited cross-currency activity.\n\n#### **D. Potential Red Flags**\n1. **Repeated Counterparty Involvement:**\n   - **Angela Watson** and **Julia Hebert** appear in multiple cycles, raising questions about their role (e.g., shell company, intermediary).\n2. **High Risk Scores:**\n   - Transactions with risk scores **> 0.8** (e.g., Rodney Morris, Sara Sherman) warrant deeper scrutiny.\n3. **Internal Firm Loops:**\n   - Cycles involving **Rowe, Monroe and Taylor** may indicate **internal fund movement** (e.g., firm debits itself via intermediaries).\n4. **Transaction ID Reuse:**\n   - The duplicate ID `a0e84ea9-5f78-4026-acc8-ce2ba098a39f` suggests **potential data errors or intentional obfuscation**.\n\n---\n\n### **4. Follow-Up Steps**\nTo further investigate these cycles, consider the following actions:\n\n#### **A. Immediate Actions (KYC/AML Review)**\n1. **Verify Counterparty Legitimacy:**\n   - Check **Angela Watson**, **Julia Hebert**, and **Rowe, Monroe and Taylor** for:\n     - Business licenses (if firms).\n     - PEPs (Politically Exposed Persons) or adverse media hits.\n     - Sanctions lists (e.g., OFAC, EU sanctions).\n2. **Analyze Transaction Patterns:**\n   - Are these cycles **artificial** (e.g., created to hide funds) or **legitimate** (e.g., trade finance)?\n   - Cross-check with **customer due diligence (CDD)** records for these entities.\n3. **Investigate Repeated IDs:**\n   - Confirm if `a0e84ea9-5f78-4026-acc8-ce2ba098a39f` is a duplicate or a **single transaction linked to multiple cycles**.\n4. **Focus on High-Risk Transactions:**\n   - Prioritize cycles with **risk scores > 0.8** (e.g., Rodney Morris, Sara Sherman).\n   - Check for **unusual currency conversions** (e.g., EUR \u2192 USD in short timeframes).\n\n#### **B. Data Validation**\n1. **Check for Data Errors:**\n   - Are all transactions **unique**? If not, clarify why the same ID appears in multiple cycles.\n   - Verify if **dates are accurate** (e.g., no future-dated transactions that could indicate fraud).\n2. **Expand Timeframe Analysis:**\n   - Are there **earlier or later cycles** involving the same parties?\n   - Check for **seasonal patterns** (e.g., all EUR transactions in Q2 2024).\n\n#### **C. Regulatory Reporting**\n1. **File Suspicious Activity Reports (SARs):**\n   - If cycles appear **suspicious** (e.g., high risk, repeated patterns), report to compliance teams.\n2. **Monitor for Further Activity:**\n   - Set up **alerts** for transactions involving:\n     - Angela Watson, Julia Hebert, or Rowe, Monroe and Taylor.\n     - EUR \u2192 USD conversions.\n     - High-risk counterparties (risk score > 0.8).\n\n#### **D. Graph Analysis (Advanced)**\n1. **Visualize the Network:**\n   - Plot all cycles to identify **clusters** or **central nodes** (e.g., Angela Watson as a hub).\n   - Use **graph algorithms** to detect:\n     - **Strongly connected components** (SCCs) in the transaction graph.\n     - **Bridge transactions** (critical links in the cycle).\n2. **Check for Longer Cycles:**\n   - Are there **3-hop or 4-hop cycles** involving these same parties?\n\n#### **E. Client Communication**\n1. **Engage High-Risk Clients:**\n   - For counterparties like **Rodney Morris** or **Sara Sherman**, request:\n     - Additional documentation (e.g., source of funds).\n     - Explanation for **high-risk transactions**.\n2. **Educate on Compliance:**\n   - If cycles are **legitimate**, ensure clients understand **transaction monitoring requirements**.\n\n---\n### **5. Example Output for User (Structured Response)**\nIf the user asked for a **summary table** of cycles, here\u2019s how it could be formatted:\n\n| **Counterparty 1**       | **Counterparty 2**       | **Counterparty 3**         | **Transaction 1** (Date, Amount, Type) | **Transaction 2** (Date, Amount, Type) | **Risk Score (Max)** | **Currency** | **Notes**                          |\n|--------------------------|--------------------------|----------------------------|----------------------------------------|----------------------------------------|----------------------|--------------|------------------------------------|\n| Patricia King            | Cristian Morales        | Angela Watson              | 2024-05-23, $9,509.42 (credit)        | 2025-08-29, $11,252.21 (credit)       | 0.55                 | USD          | Angela Watson appears in 3 cycles. |\n| Joshua Lee               | Matthew Craig           | Angela Watson              | 2024-09-03, $7,337.71 (debit)         | 2024-12-31, $13,836.34 (debit)        | 0.62                 | USD          | Duplicate transaction ID.         |\n| Nicholas Burns           | Matthew Craig           | Angela Watson              | 2025-12-05, $16,641.12 (credit)      | 2024-12-31, $13,836.34 (debit)        | 0.59                 | USD          | Same debit as above.               |\n| Margaret Hartman         | Maureen Smith           | Julia Hebert               | 2025-12-15, $12,401.14 (debit)       | 2024-06-17, $16,316.81 (debit)        | 0.87                 | EUR          | High-risk EUR cycle.               |\n| Rodney Morris            | Maureen Smith           | Julia Hebert               | 2024-05-27, $10,909.41 (debit)       | 2024-06-17, $16,316.81 (debit)        | 0.80                 | EUR          | Repeated EUR transactions.         |\n| Sara Sherman             | Stefanie Massey         | Rowe, Monroe and Taylor    | 2024-12-10, $18,462.79 (debit)       | 2026-01-24, $6,518.19 (debit)         | 0.97                 | USD          | Highest risk score.                |\n\n---\n### **Final Note**\nThese cycles may represent **legitimate business activity** (e.g., trade finance, multi-party payments) or **suspicious patterns** (e.g., money laundering, fraud). **Further investigation is required** to determine intent. Would you like a deeper dive into any specific cycle or counterparty?",
+      "intermediate_steps": [
+        {
+          "query": "cypher\nMATCH path = (a1:Account)-[:SENT]->(t1:Transaction)-[:RECEIVED]->(a2:Account)-[:SENT]->(t2:Transaction)-[:RECEIVED]->(a3:Account)\nWHERE a1.id <> a3.id\nWITH a1, a2, a3, t1, t2,\n     [x in nodes(path) | x] AS nodes,\n     [x in relationships(path) | x] AS rels\nWHERE SIZE(nodes) = 5 AND SIZE(rels) = 4\nWITH t1, t2, COLLECT(DISTINCT a1) AS accounts1, COLLECT(DISTINCT a2) AS accounts2, COLLECT(DISTINCT a3) AS accounts3\nUNWIND accounts1 AS a1\nUNWIND accounts2 AS a2\nUNWIND accounts3 AS a3\nMATCH (a1)<-[:HAS_ACCOUNT]-(c1:Customer)\nMATCH (a2)<-[:HAS_ACCOUNT]-(c2:Customer)\nMATCH (a3)<-[:HAS_ACCOUNT]-(c3:Customer)\nRETURN\n    c1.name AS counterparty1,\n    c2.name AS counterparty2,\n    c3.name AS counterparty3,\n    [t1, t2] AS transactions,\n    '2-hop transaction cycle' AS cycle_type,\n    c1.email AS counterparty1_email,\n    c2.email AS counterparty2_email,\n    c3.email AS counterparty3_email\n"
+        },
+        {
+          "context": [
+            {
+              "counterparty1": "Patricia King",
+              "counterparty2": "Cristian Morales",
+              "counterparty3": "Angela Watson",
+              "transactions": [
+                {
+                  "date": "2024-05-23T00:00:00.000000000+00:00",
+                  "amount": 9509.42,
+                  "risk_score": 0.55,
+                  "currency": "USD",
+                  "id": "d7a7ea19-c1fe-40c0-a560-fc54daae2768",
+                  "type": "credit"
+                },
+                {
+                  "date": "2025-08-29T00:00:00.000000000+00:00",
+                  "amount": 11252.21,
+                  "risk_score": 0.33,
+                  "currency": "USD",
+                  "id": "29fb1332-6371-4502-b34d-69abb8657830",
+                  "type": "credit"
+                }
+              ],
+              "cycle_type": "2-hop transaction cycle",
+              "counterparty1_email": "qweaver@example.org",
+              "counterparty2_email": "ldecker@example.net",
+              "counterparty3_email": "haydencrystal@example.org"
+            },
+            {
+              "counterparty1": "Joshua Lee",
+              "counterparty2": "Matthew Craig",
+              "counterparty3": "Angela Watson",
+              "transactions": [
+                {
+                  "date": "2024-09-03T00:00:00.000000000+00:00",
+                  "amount": 7337.71,
+                  "risk_score": 0.62,
+                  "currency": "USD",
+                  "id": "52d8333f-7bc6-4011-9943-acbb7aca91db",
+                  "type": "debit"
+                },
+                {
+                  "date": "2024-12-31T00:00:00.000000000+00:00",
+                  "amount": 13836.34,
+                  "risk_score": 0.59,
+                  "currency": "USD",
+                  "id": "a0e84ea9-5f78-4026-acc8-ce2ba098a39f",
+                  "type": "debit"
+                }
+              ],
+              "cycle_type": "2-hop transaction cycle",
+              "counterparty1_email": "heather37@example.com",
+              "counterparty2_email": "matthew19@example.com",
+              "counterparty3_email": "haydencrystal@example.org"
+            },
+            {
+              "counterparty1": "Nicholas Burns",
+              "counterparty2": "Matthew Craig",
+              "counterparty3": "Angela Watson",
+              "transactions": [
+                {
+                  "date": "2025-12-05T00:00:00.000000000+00:00",
+                  "amount": 16641.12,
+                  "risk_score": 0.16,
+                  "currency": "USD",
+                  "id": "f43da093-8e8e-42d1-a023-8aa2489a67e5",
+                  "type": "credit"
+                },
+                {
+                  "date": "2024-12-31T00:00:00.000000000+00:00",
+                  "amount": 13836.34,
+                  "risk_score": 0.59,
+                  "currency": "USD",
+                  "id": "a0e84ea9-5f78-4026-acc8-ce2ba098a39f",
+                  "type": "debit"
+                }
+              ],
+              "cycle_type": "2-hop transaction cycle",
+              "counterparty1_email": "vanessawhite@example.net",
+              "counterparty2_email": "matthew19@example.com",
+              "counterparty3_email": "haydencrystal@example.org"
+            },
+            {
+              "counterparty1": "Margaret Hartman",
+              "counterparty2": "Maureen Smith",
+              "counterparty3": "Julia Hebert",
+              "transactions": [
+                {
+                  "date": "2025-12-15T00:00:00.000000000+00:00",
+                  "amount": 12401.14,
+                  "risk_score": 0.23,
+                  "currency": "USD",
+                  "id": "4ec28bc6-8a8e-4116-b9f9-86287443b215",
+                  "type": "debit"
+                },
+                {
+                  "date": "2024-06-17T00:00:00.000000000+00:00",
+                  "amount": 16316.81,
+                  "risk_score": 0.87,
+                  "currency": "EUR",
+                  "id": "f93ceabc-5b34-468d-8ae8-bf6af5efae70",
+                  "type": "debit"
+                }
+              ],
+              "cycle_type": "2-hop transaction cycle",
+              "counterparty1_email": "vjohnson@example.net",
+              "counterparty2_email": "christopher52@example.com",
+              "counterparty3_email": "jasmine30@example.net"
+            },
+            {
+              "counterparty1": "Rodney Morris",
+              "counterparty2": "Maureen Smith",
+              "counterparty3": "Julia Hebert",
+              "transactions": [
+                {
+                  "date": "2024-05-27T00:00:00.000000000+00:00",
+                  "amount": 10909.41,
+                  "risk_score": 0.8,
+                  "currency": "EUR",
+                  "id": "3079fb7f-7e08-41d5-90de-3955d5b10234",
+                  "type": "debit"
+                },
+                {
+                  "date": "2024-06-17T00:00:00.000000000+00:00",
+                  "amount": 16316.81,
+                  "risk_score": 0.87,
+                  "currency": "EUR",
+                  "id": "f93ceabc-5b34-468d-8ae8-bf6af5efae70",
+                  "type": "debit"
+                }
+              ],
+              "cycle_type": "2-hop transaction cycle",
+              "counterparty1_email": "diamond08@example.com",
+              "counterparty2_email": "christopher52@example.com",
+              "counterparty3_email": "jasmine30@example.net"
+            },
+            {
+              "counterparty1": "Jamie Mason",
+              "counterparty2": "Clark-Jackson",
+              "counterparty3": "Julia Hebert",
+              "transactions": [
+                {
+                  "date": "2025-12-10T00:00:00.000000000+00:00",
+                  "amount": 3268.19,
+                  "risk_score": 0.25,
+                  "currency": "EUR",
+                  "id": "9b55351a-c121-4076-97bf-7beb99bf5982",
+                  "type": "debit"
+                },
+                {
+                  "date": "2024-09-03T00:00:00.000000000+00:00",
+                  "amount": 19038.7,
+                  "risk_score": 0.23,
+                  "currency": "USD",
+                  "id": "eef1c2a3-fd00-4b65-843a-eda6cd8b8700",
+                  "type": "credit"
+                }
+              ],
+              "cycle_type": "2-hop transaction cycle",
+              "counterparty1_email": "fmerritt@example.com",
+              "counterparty2_email": "mallorymiller@example.org",
+              "counterparty3_email": "jasmine30@example.net"
+            },
+            {
+              "counterparty1": "Sara Sherman",
+              "counterparty2": "Stefanie Massey",
+              "counterparty3": "Rowe, Monroe and Taylor",
+              "transactions": [
+                {
+                  "date": "2024-12-10T00:00:00.000000000+00:00",
+                  "amount": 18462.79,
+                  "risk_score": 0.83,
+                  "currency": "USD",
+                  "id": "4a45d94c-c3f4-416d-9b98-cb951f9b5bc5",
+                  "type": "debit"
+                },
+                {
+                  "date": "2026-01-24T00:00:00.000000000+00:00",
+                  "amount": 6518.19,
+                  "risk_score": 0.97,
+                  "currency": "USD",
+                  "id": "b17580fa-db96-4066-b5ef-e8ee02374be4",
+                  "type": "debit"
+                }
+              ],
+              "cycle_type": "2-hop transaction cycle",
+              "counterparty1_email": "julielindsey@example.com",
+              "counterparty2_email": "stanleypaula@example.com",
+              "counterparty3_email": "kennedyjessica@example.net"
+            },
+            {
+              "counterparty1": "William Richards",
+              "counterparty2": "Stefanie Massey",
+              "counterparty3": "Rowe, Monroe and Taylor",
+              "transactions": [
+                {
+                  "date": "2025-04-08T00:00:00.000000000+00:00",
+                  "amount": 6946.92,
+                  "risk_score": 0.48,
+                  "currency": "GBP",
+                  "id": "8b06be93-24e6-4fcc-b775-4b0e91c3d870",
+                  "type": "debit"
+                },
+                {
+                  "date": "2026-01-24T00:00:00.000000000+00:00",
+                  "amount": 6518.19,
+                  "risk_score": 0.97,
+                  "currency": "USD",
+                  "id": "b17580fa-db96-4066-b5ef-e8ee02374be4",
+                  "type": "debit"
+                }
+              ],
+              "cycle_type": "2-hop transaction cycle",
+              "counterparty1_email": "stephensonapril@example.org",
+              "counterparty2_email": "stanleypaula@example.com",
+              "counterparty3_email": "kennedyjessica@example.net"
+            },
+            {
+              "counterparty1": "Michael Hill",
+              "counterparty2": "Dawn Simon",
+              "counterparty3": "Rowe, Monroe and Taylor",
+              "transactions": [
+                {
+                  "date": "2026-02-11T00:00:00.000000000+00:00",
+                  "amount": 6216.76,
+                  "risk_score": 0.15,
+                  "currency": "USD",
+                  "id": "af90c404-3992-4841-824b-907b62dbaea5",
+                  "type": "debit"
+                },
+                {
+                  "date": "2025-12-21T00:00:00.000000000+00:00",
+                  "amount": 16824.39,
+                  "risk_score": 0.58,
+                  "currency": "USD",
+                  "id": "6175065f-9442-4fd8-9e3a-d9150eba2122",
+                  "type": "credit"
+                }
+              ],
+              "cycle_type": "2-hop transaction cycle",
+              "counterparty1_email": "gordonlindsay@example.com",
+              "counterparty2_email": "gutierrezbrandon@example.org",
+              "counterparty3_email": "kennedyjessica@example.net"
+            },
+            {
+              "counterparty1": "Erik Hill",
+              "counterparty2": "Dawn Simon",
+              "counterparty3": "Rowe, Monroe and Taylor",
+              "transactions": [
+                {
+                  "date": "2025-10-27T00:00:00.000000000+00:00",
+                  "amount": 5976.65,
+                  "risk_score": 0.92,
+                  "currency": "USD",
+                  "id": "b982f594-7286-4b0c-9ae3-9554ac424757",
+                  "type": "credit"
+                },
+                {
+                  "date": "2025-12-21T00:00:00.000000000+00:00",
+                  "amount": 16824.39,
+                  "risk_score": 0.58,
+                  "currency": "USD",
+                  "id": "6175065f-9442-4fd8-9e3a-d9150eba2122",
+                  "type": "credit"
+                }
+              ],
+              "cycle_type": "2-hop transaction cycle",
+              "counterparty1_email": "hooperteresa@example.net",
+              "counterparty2_email": "gutierrezbrandon@example.org",
+              "counterparty3_email": "kennedyjessica@example.net"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "counter": 52
+}
