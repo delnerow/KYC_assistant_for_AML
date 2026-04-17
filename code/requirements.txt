@@ -1,12 +1,9 @@
-langchain>=1.2.15
+langchain>=0.3.0
 langchain-core>=0.3.0
-langchain_ollama
+langchain-openai>=0.2.0
 langchain_community>=0.4.1
 langchain_neo4j
-langgraph>=1.1.6
+langgraph>=0.2.0
 streamlit>=1.30.0
-dotenv
-sentence-transformers>=2.2.2
-langchain_huggingface>=0.1.0
-
-
+python-dotenv
+duckduckgo-search>=6.0.0
