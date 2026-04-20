@@ -1,1 +1,14 @@
+# Virtual environment
 code/.venv
+
+# Secrets
+code/.env
+**/.env
+
+# Conversation history (contains query results with customer/transaction data)
+code/conv/
+
+# Python bytecode
+**/__pycache__/
+**/*.pyc
+**/*.pyo

@@ -196,9 +196,25 @@ if interrupt_data and interrupt_data.get("type") == "permission":
         if col1.button("✅ Approve & Execute", use_container_width=True, key="approve_btn"):
             with st.spinner("Executing query..."):
                 agent.invoke(Command(resume={"approved": True}), graph_config)
+            # Check whether the graph finished or paused again (another query)
+            after_interrupt = get_pending_interrupt()
+            if not after_interrupt:
+                # Graph completed — grab the answer and persist it
+                answer = get_final_answer_from_state() or ""
+                query_results = get_query_results_from_state()
+                if answer:
+                    current_messages.append({
+                        "role": "assistant",
+                        "content": answer,
+                        "query_results": query_results,
+                    })
+                    save_conversations_to_disk(
+                        st.session_state.conversations, st.session_state.conv_counter
+                    )
             st.rerun()
         if col2.button("❌ Deny", use_container_width=True, key="deny_btn"):
-            agent.invoke(Command(resume={"approved": False}), graph_config)
+            with st.spinner("Re-planning..."):
+                agent.invoke(Command(resume={"approved": False}), graph_config)
             st.rerun()
     st.divider()
 

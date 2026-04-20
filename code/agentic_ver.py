@@ -6,7 +6,6 @@ from datetime import datetime
 from typing import Literal, Annotated, Optional
 
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, AnyMessage
-from langchain_core.prompts import FewShotPromptTemplate, PromptTemplate
 from langchain_core.example_selectors import SemanticSimilarityExampleSelector
 from langchain_community.vectorstores import Neo4jVector
 from langgraph.graph import StateGraph, START, END
@@ -158,11 +157,12 @@ def _make_plan_node(model, graph_schema: str):
     planner = model.with_structured_output(PlanDecision)
 
     def plan_node(state: KYCState) -> dict:
+        iteration = state.get("iteration_count", 0)
+        print(f"\n[PLAN] Iteration {iteration}/6 — deciding next action")
         query_results_summary = json.dumps(
             state.get("query_results") or [], default=json_serializer
         )[:4000]  # keep context manageable
         web_results = state.get("web_search_results") or ""
-        iteration = state.get("iteration_count", 0)
 
         system_prompt = f"""You are a KYC/AML analyst assistant. Decide the next step to answer the user's question.
 
@@ -186,6 +186,7 @@ Rules:
         decision = planner.invoke(
             [SystemMessage(content=system_prompt)] + list(state.get("messages") or [])
         )
+        print(f"[PLAN] Decision: next_action={decision.next_action!r}, plan={decision.plan[:100]}")
         return {"plan": decision.plan, "next_action": decision.next_action}
 
     return plan_node
@@ -199,59 +200,70 @@ def _make_query_maker_node(model, embeddings, neo4j_config: dict, graph_schema: 
         url=neo4j_config["uri"],
         username=neo4j_config["username"],
         password=neo4j_config["password"],
-        database="kyc",
         index_name="kyc_examples_litellm",
         k=3,
         input_keys=["question"],
     )
-    example_prompt = PromptTemplate.from_template(
-        "User input: {question}\nCypher query: {query}"
-    )
-    few_shot_prompt = FewShotPromptTemplate(
-        example_selector=example_selector,
-        example_prompt=example_prompt,
-        prefix=(
-            "You are a Neo4j expert. Given an input question, create a syntactically correct "
-            "Cypher query to run.\n\nSchema:\n{schema}\n\nExamples:\n"
-        ),
-        suffix="User input: {question}\nCypher query:",
-        input_variables=["question", "schema"],
-    )
 
     def query_maker_node(state: KYCState) -> dict:
         question = state.get("plan", "")
-        prompt_text = few_shot_prompt.format(question=question, schema=graph_schema)
+        print(f"\n[QUERY_MAKER] Building Cypher for goal: {question[:120]}")
+
+        # Build prompt manually — do NOT use FewShotPromptTemplate.format() because
+        # Python str.format() trips on Cypher property syntax like {name:'Nicolas Silva'}.
+        selected = example_selector.select_examples({"question": question})
+        examples_text = "\n\n".join(
+            f"User input: {ex['question']}\nCypher query: {ex['query']}"
+            for ex in selected
+        )
+        prompt_text = (
+            "You are a Neo4j expert. Given an input question, create a syntactically "
+            "correct Cypher query to run. Return ONLY the raw Cypher — no markdown, "
+            "no explanation.\n\n"
+            f"Schema:\n{graph_schema}\n\n"
+            f"Examples:\n{examples_text}\n\n"
+            f"User input: {question}\nCypher query:"
+        )
+        print(f"[QUERY_MAKER] Selected {len(selected)} examples from vector store")
+
         response = model.invoke([HumanMessage(content=prompt_text)])
         cypher = response.content.strip()
         # Strip markdown code fences if present
         if cypher.startswith("```"):
             lines = cypher.splitlines()
             cypher = "\n".join(lines[1:-1]) if len(lines) > 2 else cypher
+        print(f"[QUERY_MAKER] Generated Cypher:\n{cypher}\n")
         return {"pending_query": cypher}
 
     return query_maker_node
 
 
 def _user_permission_node(state: KYCState) -> dict:
+    query = state.get("pending_query", "")
+    print(f"\n[USER_PERMISSION] Pausing for user approval of query:\n{query}\n")
     result = interrupt(
         {
             "type": "permission",
-            "query": state.get("pending_query", ""),
+            "query": query,
             "plan": state.get("plan", ""),
         }
     )
     approved = result.get("approved", False) if isinstance(result, dict) else bool(result)
+    print(f"[USER_PERMISSION] User {'APPROVED' if approved else 'DENIED'} the query")
     return {"permission_granted": approved}
 
 
 def _make_query_executer_node(neo4j_graph):
     def query_executer_node(state: KYCState) -> dict:
         cypher = state.get("pending_query", "")
+        print(f"\n[QUERY_EXECUTER] Running:\n{cypher}")
         try:
             raw = neo4j_graph.query(cypher)
             results = safe_json(raw)
+            print(f"[QUERY_EXECUTER] Got {len(results)} result(s)")
         except Exception as e:
             results = [{"error": str(e)}]
+            print(f"[QUERY_EXECUTER] ERROR: {e}")
 
         return {
             "query_results": [{"query": cypher, "results": results}],
@@ -288,16 +300,20 @@ Structure your final answer with:
 
         context = f"Original question: {original_question}\n\nQuery results:\n{query_results}"
 
+        print(f"\n[ANALYZE] Iteration {iteration}/6 — reviewing query results")
         decision = analyzer.invoke(
             [SystemMessage(content=system_prompt), HumanMessage(content=context)]
         )
+        print(f"[ANALYZE] needs_more_data={decision.needs_more_data}, reasoning={decision.reasoning[:100]}")
 
         if not decision.needs_more_data or iteration >= 6:
             answer = decision.final_answer or "No results found."
+            print(f"[ANALYZE] Producing final answer ({len(answer)} chars)")
             return {
                 "next_action": "answer",
                 "messages": [AIMessage(content=answer)],
             }
+        print(f"[ANALYZE] Requesting another query: {decision.next_query_goal[:100]}")
         return {"next_action": "query", "plan": decision.next_query_goal}
 
     return analyze_node
